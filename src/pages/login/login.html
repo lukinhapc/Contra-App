@@ -8,31 +8,50 @@
 </ion-header>
 
 <ion-content padding>
+  <ion-row>
+    <ion-col width-100 style="text-align: center">
 
-  <ion-list>
+      <img style="width:60%;" src="../../assets/imgs/logo.png">
+
+    </ion-col>
+  </ion-row>
+  <form #form="ngForm" novalidate>
+    <ion-list inset>
+      <ion-item>
+        <ion-label floating><ion-icon ios="ios-mail" md="md-mail"></ion-icon> Email</ion-label>
+        <ion-input type="text" name="email" [(ngModel)]="user.email" #email="ngModel" required></ion-input>
+        <ion-item *ngIf="email.errors && (email.dirty || email.touched)" class="text-danger">
+          O campo é obrigatório!
+        </ion-item>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating> <ion-icon ios="ios-key" md="md-key"></ion-icon> Senha</ion-label>
+        <ion-input type="password" name="password" [(ngModel)]="user.password" #password="ngModel" required></ion-input>
+        <ion-item *ngIf="password.errors && (password.dirty || password.touched)" class="text-danger">
+          O campo é obrigatório!
+        </ion-item>
+      </ion-item>
+    </ion-list>
+
     <ion-row>
-      <ion-col style="text-align: center;">
-        <img src="../../assets/imgs/logo.png">
-      </ion-col>
-      <br>
-      <ion-item>
-        <ion-label floating>Usuário</ion-label>
-        <ion-input type="text"></ion-input>
-      </ion-item>
+      <ion-col width-100 style="text-align: center">
 
-      <ion-item>
-        <ion-label floating>Senha</ion-label>
-        <ion-input type="password"></ion-input>
-      </ion-item>
-      <br>
-      <br>
-      <ion-col width-50 style="text-align: center">
+        <button ion-button [disabled]="!form.form.valid" (click)="signIn()">Entrar</button>
+        <br>
+        <button ion-button color="secondary" clear (click)="resetPassword()">Esqueceu sua senha?</button>
         <br>
         <br>
-        <button ion-button>Entrar</button>
+        <br>
+        <button ion-button color="secondary" outline (click)="createAccount()">Quero criar uma conta</button>
+        <br>
+        <br>
+        <br>
+        <button ion-button icon-start (click)="loginAction();">
+          <ion-icon ios="logo-facebook" md="logo-facebook"></ion-icon>
+          Entrar com Facebook
+        </button>
       </ion-col>
     </ion-row>
-
-  </ion-list>
-
+  </form>
 </ion-content>

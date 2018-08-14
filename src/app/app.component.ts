@@ -1,11 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
+import { AngularFireAuth } from '../../node_modules/angularfire2/auth';
+import { AuthService } from '../providers/auth/auth-service';
 
 @Component({
   templateUrl: 'app.html'
@@ -13,17 +14,33 @@ import { LoginPage } from '../pages/login/login';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = LoginPage;
+  rootPage: any;
 
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{ title: string, component: any }>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform,
+    public statusBar: StatusBar,
+    public splashScreen: SplashScreen,
+    private authService: AuthService,
+    private alertCtrl: AlertController,
+    afAuth: AngularFireAuth,) {
     this.initializeApp();
+
+    const authObserver = afAuth.authState.subscribe(user => {
+      if (user) {
+        this.rootPage = HomePage;
+        authObserver.unsubscribe();
+      } else {
+        this.rootPage = LoginPage;
+        authObserver.unsubscribe();
+      }
+
+    });
 
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'Home', component: HomePage },
-      { title: 'List', component: ListPage }
+      { title: 'Sair', component: null }
     ];
 
   }
@@ -38,8 +55,34 @@ export class MyApp {
   }
 
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
+    if (page.null) {
+    } else {
+      this.signOutConfirm();
+    }
+  }
+
+  signOutConfirm() {
+    let alert = this.alertCtrl.create({
+      title: 'Logout',
+      message: 'Deseja realmente sair?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Clicou em cancelar');
+          }
+        },
+        {
+          text: 'SAIR',
+          handler: () => {            
+            this.authService.signOut();
+            this.nav.setRoot(LoginPage);
+            console.log('Clicou em sair');
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }
